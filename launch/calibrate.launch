@@ -1,0 +1,14 @@
+<launch>
+
+    <arg name="bag_file"/>
+    <arg name="metadata_file"/>
+    <arg name="point_topic"/>
+
+    <rosparam file="$(arg metadata_file)" command="load"/>
+    <param name="bag_path" type="string" value="$(arg bag_file)"/>
+    <param name="topic" type="string" value="$(arg point_topic)"/>
+    <param name="n_skip" type="int" value="10" />
+    <param name="n_total" type="int" value="500" />
+
+    <node pkg="coin_lio" type="coin_lio_calibration" name="calib" output="screen" />
+</launch>

@@ -1,0 +1,22 @@
+<launch>
+    <arg name="rviz" default="true" />
+    <arg name="bag_file" default="" />
+
+    <rosparam file="$(find coin_lio)/config/params.yaml" command="load"/>
+    <rosparam file="$(find coin_lio)/config/line_removal.yaml" command="load"/>
+    <rosparam file="$(find coin_lio)/config/os_newer_college.json" command="load"/>
+
+    <param name="common/lid_topic" type="string" value="/os_cloud_node/points"/>
+    <param name="common/imu_topic" type="string" value="/os_cloud_node/imu"/>
+    <param name="image/u_shift" type="int" value="31"/>
+
+    <node pkg="coin_lio" type="coin_lio_mapping" name="laserMapping" output="screen" launch-prefix=""/>
+
+    <group if="$(arg rviz)">
+     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find coin_lio)/rviz_cfg/coinlio_viz.rviz" />
+    </group>
+
+    <group unless="$(eval arg('bag_file') == '')">
+        <node pkg="rosbag" type="play" name="player" output="screen" args="--clock --quiet $(arg bag_file) -d 2 --queue=1000"/>
+    </group>  
+</launch>
