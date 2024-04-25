@@ -47,8 +47,6 @@ This package was developed on Ubuntu 20.04 using ROS Noetic. Other versions shou
     cd ~/catkin_ws/src
     git clone git@github.com:ethz-asl/coin-lio.git
     cd COIN-LIO
-    git submodule init
-    git submodule update --recursive
     ```
 4. Build COIN-LIO:
     ```bash
