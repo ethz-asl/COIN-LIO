@@ -14,6 +14,11 @@ void Preprocess::process(const sensor_msgs::PointCloud2::ConstPtr &msg, PointClo
   }
 }
 
+void Preprocess::process(const livox_ros_driver::CustomMsg::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out)
+{
+  avia_handler(msg,pcl_out);
+}
+
 void Preprocess::ouster_handler(const sensor_msgs::PointCloud2::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out)
 {
   pcl::PointCloud<ouster_ros::Point> pl_orig;
@@ -49,4 +54,34 @@ void Preprocess::ouster_handler(const sensor_msgs::PointCloud2::ConstPtr &msg, P
     if (pl_orig.points[i].t > max_time) max_time = pl_orig.points[i].t;
   }
   pcl_out->header.stamp = max_time;
+}
+
+
+void Preprocess::avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out)
+{
+  uint plsize = msg->point_num;
+  pcl_out->clear();
+  pcl_out->reserve(plsize);
+
+  for(uint i=1; i<plsize; i++)
+  {
+      if((abs(msg->points[i].x - msg->points[i-1].x) < 1e-8)
+          || (abs(msg->points[i].y - msg->points[i-1].y) < 1e-8)
+          || (abs(msg->points[i].z - msg->points[i-1].z) < 1e-8)
+          || (msg->points[i].x * msg->points[i].x + msg->points[i].y * msg->points[i].y < blind)
+          || (msg->points[i].line > scan_line))
+      {
+          continue;
+      }
+
+       if (i % point_filter_num == 0){
+          PointType pl_buffer;
+          pl_buffer.x = msg->points[i].x;
+          pl_buffer.y = msg->points[i].y;
+          pl_buffer.z = msg->points[i].z;
+          pl_buffer.intensity = msg->points[i].reflectivity;
+          pl_buffer.curvature = msg->points[i].offset_time / float(1000000); //use curvature as time of each laser points
+          pcl_out->points.push_back(pl_buffer);
+      }
+  }
 }

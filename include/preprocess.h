@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <livox_ros_driver/CustomMsg.h>
 
 using namespace std;
 
@@ -46,15 +47,19 @@ class Preprocess
   Preprocess() {}
   ~Preprocess() {}
 
+  void process(const livox_ros_driver::CustomMsg::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out);
   void process(const sensor_msgs::PointCloud2::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out);
 
   int lidar_type;
+  int point_filter_num;
+  int scan_line;
   double blind;
   double lidar_sensor_z_offset;
   bool reflectivity;
 
   private:
   void ouster_handler(const sensor_msgs::PointCloud2::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out);
+  void avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out);
 };
 
 #endif  // COIN_LIO_PREPROCESS_H_

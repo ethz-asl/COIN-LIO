@@ -53,6 +53,7 @@
 #include <tf/transform_broadcaster.h>
 #include <thread>
 #include <visualization_msgs/Marker.h>
+#include <livox_ros_driver/CustomMsg.h>
 
 #include "feature_manager.h"
 #include "image_processing.h"
@@ -138,6 +139,8 @@ shared_ptr<FeatureManager> feature_manager;
 double photo_scale;
 Eigen::MatrixXd h_geo_last;
 LidarFrame current_frame;
+
+ros::Publisher publ_debug_lidar;
 
 void pointBodyToWorld(PointType const * const pi, PointType * const po)
 {
@@ -256,6 +259,31 @@ void standard_pcl_cbk(const sensor_msgs::PointCloud2::ConstPtr &msg)
     time_buffer.push_back(msg->header.stamp.toSec());
     last_timestamp_lidar = msg->header.stamp.toSec();
 }
+
+
+void livox_pcl_cbk(const livox_ros_driver::CustomMsg::ConstPtr &msg)
+{
+    if (msg->header.stamp.toSec() < last_timestamp_lidar)
+    {
+        ROS_ERROR("lidar loop back, clear buffer");
+        lidar_buffer.clear();
+    }
+    PointCloudXYZI::Ptr ptr(new PointCloudXYZI());
+    p_pre->process(msg, ptr);
+
+    const std::lock_guard<std::mutex> lock(mtx_buffer);
+    lidar_buffer.push_back(ptr);
+    time_buffer.push_back(msg->header.stamp.toSec());
+    last_timestamp_lidar = msg->header.stamp.toSec();
+
+
+    sensor_msgs::PointCloud2 laserCloudmsg;
+    pcl::toROSMsg(*ptr, laserCloudmsg);
+    laserCloudmsg.header.stamp = ros::Time().now();
+    laserCloudmsg.header.frame_id = "body";
+    publ_debug_lidar.publish(laserCloudmsg);
+}
+
 
 double timediff_lidar_wrt_imu = 0.0;
 
@@ -931,7 +959,6 @@ int main(int argc, char** argv)
     bool dashboard;
     bool debug;
     double eps;
-    int point_filter_num;
     int n_uninformative;
 
     // Common Params
@@ -948,7 +975,7 @@ int main(int argc, char** argv)
 
     // Mapping Params
     nh.param<bool>("mapping/extrinsic_est_en", extrinsic_est_en, true);
-    nh.param<int>("mapping/point_filter_num", point_filter_num, 4);
+    nh.param<int>("mapping/point_filter_num", p_pre->point_filter_num, 4);
     nh.param<double>("mapping/det_range",DET_RANGE, 300.f);
     nh.param<double>("mapping/cube_side_length",cube_len, 200);
     nh.param<double>("mapping/filter_size_map",filter_size_map_min,0.5);
@@ -968,6 +995,7 @@ int main(int argc, char** argv)
     // Preprocess Params
     nh.param<int>("preprocess/lidar_type", p_pre->lidar_type, OUSTER);
     nh.param<double>("preprocess/blind", p_pre->blind, 0.01);
+    nh.param<int>("preprocess/scan_line", p_pre->scan_line, 32);
     std::vector<double> lidar_to_sensor;
     bool transform_found = nh.getParam("/lidar_to_sensor_transform", lidar_to_sensor) ||
         nh.getParam("/lidar_intrinsics/lidar_to_sensor_transform", lidar_to_sensor);
@@ -1035,8 +1063,10 @@ int main(int argc, char** argv)
         predicted_feature_publisher = nh.advertise<sensor_msgs::Image>("/predicted_feature_image", 2000);
         feature_marker_publisher = nh.advertise<visualization_msgs::Marker>("/feature_markers", 2000);
     } 
+    publ_debug_lidar = nh.advertise<sensor_msgs::PointCloud2>("/cloud_effected_debug", 100000);
     
-    ros::Subscriber sub_pcl = nh.subscribe(lid_topic, 200000, standard_pcl_cbk);
+    ros::Subscriber sub_pcl = p_pre->lidar_type == 1 ?  nh.subscribe(lid_topic, 200000, livox_pcl_cbk) : \
+                                                        nh.subscribe(lid_topic, 200000, standard_pcl_cbk);
     ros::Subscriber sub_imu = nh.subscribe(imu_topic, 200000, imu_cbk);
 
 //------------------------------------------------------------------------------------------------------
@@ -1074,7 +1104,7 @@ int main(int argc, char** argv)
             if (feats_undistort->empty() || (feats_undistort == NULL) || vec_T_Li_Lk.empty())
             {
                 timing::Timing::Reset();
-                ROS_WARN("No point, skip this scan!\n");
+                ROS_WARN("No point, skip this scan! empty: %d \n",feats_undistort->empty());
                 continue;
             }
             state_point = kf.get_x();
@@ -1140,15 +1170,15 @@ int main(int argc, char** argv)
             // Segment the map in lidar FOV 
             lasermap_fov_segment();
 
-            // Downsample points by skipping
-            PointCloudXYZI::Ptr feats_undistort_skip(new PointCloudXYZI());
-            feats_undistort_skip->reserve(feats_undistort->points.size()/point_filter_num);
-            for (size_t idx = 0u; idx < feats_undistort->points.size(); idx += point_filter_num) {
-                feats_undistort_skip->points.push_back(feats_undistort->points[idx]);
-            }
+            // // Downsample points by skipping
+            // PointCloudXYZI::Ptr feats_undistort_skip(new PointCloudXYZI());
+            // feats_undistort_skip->reserve(feats_undistort->points.size()/point_filter_num);
+            // for (size_t idx = 0u; idx < feats_undistort->points.size(); idx += point_filter_num) {
+            //     feats_undistort_skip->points.push_back(feats_undistort->points[idx]);
+            // }
 
             // Downsample points using voxel filter
-            downSizeFilterSurf.setInputCloud(feats_undistort_skip);
+            downSizeFilterSurf.setInputCloud(feats_undistort);
             downSizeFilterSurf.filter(*feats_down_body);
             feats_down_size = feats_down_body->points.size();
             
@@ -1172,7 +1202,7 @@ int main(int argc, char** argv)
 
             if (feats_down_size < 5)
             {
-                ROS_WARN("No point, skip this scan!\n");
+                ROS_WARN("No point, skip this scan! feats_down_size:%d \n",feats_down_size);
                 continue;
             }
 
@@ -1285,6 +1315,8 @@ int main(int argc, char** argv)
             // Publish points
             if (path_en) publish_path(pubPath);
             if (scan_pub_en && scan_body_pub_en) publish_frame_body(pubLaserCloudFull_body);
+
+            publish_frame_world(pubLaserCloudFull);
 
             full_cycle_timer.Stop();
 
