@@ -103,4 +103,8 @@ The line artifact removal filter can be tested and tuned using the provided note
 ## Acknowledgements
 COIN-LIO builds on top of [FAST-LIO2](https://github.com/hku-mars/FAST_LIO) for the point-to-plane registration. We thank the authors for open-sourcing their outstanding work.
 Our dashboard was inspired by [DLIO](https://github.com/vectr-ucla/direct_lidar_inertial_odometry).\
+<p align="left">
+  <img width='50%' src="doc/coin_dashboard.gif">
+</p>
+
 We used [ascii-image-converter](https://github.com/TheZoraiz/ascii-image-converter) for our ascii animation.
