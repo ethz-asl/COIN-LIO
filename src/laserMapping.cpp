@@ -994,7 +994,8 @@ int main(int argc, char** argv)
     /*** variables definition ***/
     FOV_DEG = (fov_deg + 10.0) > 179.9 ? 179.9 : (fov_deg + 10.0);
     double trajectory_length = 0.0;
-
+    V3D t_G_I = V3D::Zero();
+    
     memset(point_selected_surf, true, sizeof(point_selected_surf));
     downSizeFilterSurf.setLeafSize(filter_size_surf_min, filter_size_surf_min, filter_size_surf_min);
     downSizeFilterMap.setLeafSize(filter_size_map_min, filter_size_map_min, filter_size_map_min);
@@ -1289,8 +1290,8 @@ int main(int argc, char** argv)
             full_cycle_timer.Stop();
 
             if (dashboard) {
-                V3D t_G_I = V3D::Zero();t_G_I = T_GI.block<3,1>(0,3);
                 double segment_length = (T_GI.block<3,1>(0,3) - t_G_I).norm();
+                t_G_I = T_GI.block<3,1>(0,3);
                 trajectory_length += segment_length;
                 log_fancy(Measures.lidar_end_time, trajectory_length, weak_directions_g.size(),h_geo_last.rows(), 
                     feature_manager->features().size(), feature_manager->nAdded(), feature_manager->nRemoved(), 
