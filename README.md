@@ -83,7 +83,7 @@ Run a sequence:
 * **LiDAR:**
 Since different Ouster sensors have different image projection parameters, we need to run a calibration tool to evaluate the column shift which is required to correct the image projection model. This procedure is only required once per sensor.
   ```bash
-  roslaunch coin_lio calibrate.launch bag_file:=<bag_path.bag> metadata_file:=<metadata_path.bag> point_topic:=<pointcloud_topic>
+  roslaunch coin_lio calibrate.launch bag_file:=<bag_path.bag> metadata_file:=<metadata_path.json> point_topic:=<pointcloud_topic>
   ```
   The evaluated column shift parameter will be printed at the end of the procedure.
 * **IMU:**
@@ -91,7 +91,7 @@ If you are not using the built-in IMU in the Ouster LiDAR, you need to adapt the
 ### Run COIN-LIO with your own data
 Launch with settings for your data:
   ```bash
-  roslaunch coin_lio mapping.launch metadata_file:=<metadata_path.bag> column_shift:=<parameter from calibration> point_topic:=<pointcloud_topic> imu_topic:=<imu_topic>
+  roslaunch coin_lio mapping.launch metadata_file:=<metadata_path.json> column_shift:=<parameter from calibration> point_topic:=<pointcloud_topic> imu_topic:=<imu_topic>
   ```
 Play your data:
   ```bash
