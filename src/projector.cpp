@@ -42,6 +42,9 @@ Projector::Projector(ros::NodeHandle nh) {
             if (idx_to_u_[idx] < 0) {
              idx_to_u_[idx] += cols_;
             }
+            if (idx_to_u_[idx] >= cols_) {
+             idx_to_u_[idx] -= cols_;
+            }
         }
     }
 };
