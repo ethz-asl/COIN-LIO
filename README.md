@@ -82,6 +82,8 @@ Run a sequence:
 ### Sensor Calibration
 * **LiDAR:**
 Since different Ouster sensors have different image projection parameters, we need to run a calibration tool to evaluate the column shift which is required to correct the image projection model. This procedure is only required once per sensor.
+
+It is important to use the metadata file that corresponds to your specific sensor (more information can be found [here](https://github.com/ouster-lidar/ouster-ros/wiki/index)).
   ```bash
   roslaunch coin_lio calibrate.launch bag_file:=<bag_path.bag> metadata_file:=<metadata_path.json> point_topic:=<pointcloud_topic>
   ```
