@@ -130,7 +130,6 @@ void ImageProcessor::filterBrightness(cv::Mat& img) {
     // Normalize and scale image
     cv::Mat normalized_img = (140.*img / brightness); 
     // Smooth image
-    cv::Mat smoothed;
     cv::GaussianBlur(normalized_img, img, cv::Size(3,3), 0);
 }
 
