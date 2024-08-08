@@ -33,11 +33,13 @@ class ImageProcessor {
     bool reflectivity_;
     bool remove_lines_;
     bool brightness_filter_;
+    bool blur_;
     double intensity_scale_;
     double min_range_;
     double max_range_;
     int rows_;
     int cols_;
+    int erosion_margin_;
 };
 
 #endif  // COIN_LIO_IMAGE_PROCESSOR_H_

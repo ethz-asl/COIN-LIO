@@ -27,7 +27,7 @@ ImageProcessor::ImageProcessor(ros::NodeHandle nh, std::shared_ptr<Projector> pr
     kernel_dy_.at<float>(0, 0) = -0.5;
     kernel_dy_.at<float>(2, 0) = 0.5;
 
-    int k_size = manager->patchSize() + 2;
+    int k_size = manager->patchSize() + erosion_margin_;
     kernel_erosion_ = cv::Mat::ones(k_size, k_size, CV_32FC1);
 };
 
@@ -35,7 +35,9 @@ void ImageProcessor::loadParameters(ros::NodeHandle nh) {
     nh.param<bool>("image/reflectivity", reflectivity_, false);
     nh.param<bool>("image/line_removal", remove_lines_, true);
     nh.param<bool>("image/brightness_filter", brightness_filter_, true);
+    nh.param<bool>("image/blur", blur_, true);
     nh.param<double>("image/intensity_scale", intensity_scale_, 0.25);
+    nh.param<int>("image/erosion_margin", erosion_margin_, 2);
     std::vector<int> window;
     nh.getParam("image/window", window);
     if (window.size() != 2) {
@@ -80,6 +82,12 @@ void ImageProcessor::createImages(LidarFrame& frame) {
 
     if (brightness_filter_) {
         filterBrightness(frame.img_intensity);
+    }
+
+    if (blur_) {
+        cv::Mat img_blur;
+        cv::GaussianBlur(frame.img_intensity, img_blur, cv::Size(3,3), 0);
+        frame.img_intensity = img_blur;
     }
     
     cv::threshold(frame.img_intensity, frame.img_intensity, 255., 255., cv::THRESH_TRUNC);
@@ -129,8 +137,7 @@ void ImageProcessor::filterBrightness(cv::Mat& img) {
     brightness += 1;
     // Normalize and scale image
     cv::Mat normalized_img = (140.*img / brightness); 
-    // Smooth image
-    cv::GaussianBlur(normalized_img, img, cv::Size(3,3), 0);
+    img = normalized_img;
 }
 
 void ImageProcessor::createMask(const cv::Mat& range_img, cv::Mat& mask) {
