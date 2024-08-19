@@ -16,12 +16,14 @@ We present COIN-LIO, a LiDAR Inertial Odometry pipeline that tightly couples inf
 
 Please cite our work if you are using COIN-LIO in your research.
   ```bibtex
-  @article{pfreundschuh2023coin,
+@inproceedings{pfreundschuh2024coin,
   title={COIN-LIO: Complementary Intensity-Augmented LiDAR Inertial Odometry},
   author={Pfreundschuh, Patrick and Oleynikova, Helen and Cadena, Cesar and Siegwart, Roland and Andersson, Olov},
-  journal={arXiv preprint arXiv:2310.01235},
-  year={2023}
-  }
+  booktitle={2024 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={1730--1737},
+  year={2024},
+  organization={IEEE}
+}
   ```
 
 # Setup
