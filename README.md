@@ -1,9 +1,17 @@
+# Complementary Intensity-Augmented LiDAR Inertial Odometry
+
+
 <p align="center">
   <img width=125 src="doc/coin_transparent.gif">
 </p>
 
-# Complementary Intensity-Augmented LiDAR Inertial Odometry
-Patrick Pfreundschuh, Helen Oleynikova, Cesar Cadena, Roland Siegwart, and Olov Andersson. "COIN-LIO: Complementary Intensity-Augmented LiDAR Inertial Odometry" accepted at ICRA 2024. \[ [ArXiv](https://arxiv.org/abs/2310.01235) | [Video](https://youtu.be/H_sPLofuHpk) \]
+<p align="center">
+<a href="https://github.com/ethz-asl/COIN-LIO/tree/main"><img src="https://img.shields.io/badge/-C++-blue?logo=cplusplus" /></a>
+<a href="https://arxiv.org/pdf/2310.01235"><img src="https://img.shields.io/badge/Paper-PDF-yellow" alt="Paper" /></a>
+<a href="https://arxiv.org/abs/2310.01235"><img src="https://img.shields.io/badge/arXiv-2310.01235-b31b1b.svg?style=flat-square" alt="Arxiv" /></a>
+<a href="https://www.youtube.com/watch?v=H_sPLofuHpk"><img src="https://badges.aleen42.com/src/youtube.svg" alt="YouTube" /></a>
+</p>
+
 <p align="center">
   <img width='100%' src="doc/coin_tracking.gif">
 </p>
