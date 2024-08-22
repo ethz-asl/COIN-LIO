@@ -49,7 +49,7 @@ jobs:
       if: ${{ matrix.config.container == 'ros:noetic-ros-base-focal' }}
       run: |
         sudo apt update
-        sudo apt-get install -y --no-install-recommends ros-noetic-desktop-full=1.5.0-1* && rm -rf /var/lib/apt/lists/*
+        sudo apt-get install -y --no-install-recommends ros-noetic-desktop-full=1.5.0-1*
         sudo apt-get install -y python3-vcstool python3-catkin-tools libgoogle-glog-dev ros-$ROS_DISTRO-cmake-modules
 
     - name: Release Build Test
