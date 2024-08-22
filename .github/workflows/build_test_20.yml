@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {name: 'Ubuntu 20.04 + ROS Noetic: Build  ', rosdistro: 'noetic', container: 'ros:noetic-desktop-full'}
+          - {name: 'Ubuntu 20.04 + ROS Noetic: Build  ', rosdistro: 'noetic', container: 'ros:noetic-ros-base-focal'}
     container: ${{ matrix.config.container }}
     steps:
     - uses: actions/checkout@v1
@@ -46,9 +46,10 @@ jobs:
           ${{ matrix.config.name }}-ccache-
 
     - name: Install System Deps on Noetic
-      if: ${{ matrix.config.container == 'ros:noetic-desktop-full' }}
+      if: ${{ matrix.config.container == 'ros:noetic-ros-base-focal' }}
       run: |
-        sudo apt-get install python3-vcstool python3-catkin-tools libgoogle-glog-dev ros-$ROS_DISTRO-cmake-modules protobuf-compiler autoconf git rsync -y   
+        sudo apt-get install python3-vcstool python3-catkin-tools libgoogle-glog-dev ros-$ROS_DISTRO-cmake-modules
+        ros-$ROS_DISTRO-perception protobuf-compiler autoconf git rsync -y   
 
     - name: Release Build Test
       working-directory: 
