@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+<img src="https://github.com/ethz-asl/COIN-LIO/actions/workflows/build_test_20.yml/badge.svg">
 <a href="https://github.com/ethz-asl/COIN-LIO/tree/main"><img src="https://img.shields.io/badge/-C++-blue?logo=cplusplus" /></a>
 <a href="https://arxiv.org/pdf/2310.01235"><img src="https://img.shields.io/badge/Paper-PDF-yellow" alt="Paper" /></a>
 <a href="https://arxiv.org/abs/2310.01235"><img src="https://img.shields.io/badge/arXiv-2310.01235-b31b1b.svg?style=flat-square" alt="Arxiv" /></a>
