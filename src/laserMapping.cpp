@@ -37,6 +37,7 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+#include <boost/filesystem.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/Vector3.h>
 #include <ikd-Tree/ikd_Tree.h>
@@ -446,7 +447,14 @@ void publish_frame_world(const ros::Publisher & pubLaserCloudFull)
         if (pcl_wait_save->size() > 0 && pcd_save_interval > 0  && scan_wait_num >= pcd_save_interval)
         {
             pcd_index ++;
-            string all_points_dir(string(string(ROOT_DIR) + "PCD/scans_") + to_string(pcd_index) + string(".pcd"));
+            string pcd_dir = string(ROOT_DIR) + "PCD/";
+            bool directory_exists = boost::filesystem::exists(pcd_dir) && 
+                boost::filesystem::is_directory(pcd_dir);
+            if (!directory_exists)
+            {
+                boost::filesystem::create_directory(pcd_dir);
+            }
+            string all_points_dir(pcd_dir + to_string(pcd_index) + string(".pcd"));
             pcl::PCDWriter pcd_writer;
             cout << "current scan saved to /PCD/" << all_points_dir << endl;
             pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
@@ -1285,6 +1293,7 @@ int main(int argc, char** argv)
 
             // Publish points
             if (path_en) publish_path(pubPath);
+            if (scan_pub_en || pcd_save_en)      publish_frame_world(pubLaserCloudFull);
             if (scan_pub_en && scan_body_pub_en) publish_frame_body(pubLaserCloudFull_body);
 
             full_cycle_timer.Stop();
@@ -1311,9 +1320,16 @@ int main(int argc, char** argv)
     if (pcl_wait_save->size() > 0 && pcd_save_en)
     {
         string file_name = string("scans.pcd");
-        string all_points_dir(string(string(ROOT_DIR) + "PCD/") + file_name);
+        string pcd_dir = string(ROOT_DIR) + "PCD/";
+        bool directory_exists = boost::filesystem::exists(pcd_dir) && 
+            boost::filesystem::is_directory(pcd_dir);
+        if (!directory_exists)
+        {
+            boost::filesystem::create_directory(pcd_dir);
+        }
+        string all_points_dir(pcd_dir + file_name);
         pcl::PCDWriter pcd_writer;
-        cout << "current scan saved to /PCD/" << file_name<<endl;
+        cout << "current scan saved to " << all_points_dir <<endl;
         pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
     }
     return 0;
