@@ -456,7 +456,7 @@ void publish_frame_world(const ros::Publisher & pubLaserCloudFull)
             }
             string all_points_dir(pcd_dir + to_string(pcd_index) + string(".pcd"));
             pcl::PCDWriter pcd_writer;
-            cout << "current scan saved to /PCD/" << all_points_dir << endl;
+            cout << "current scan saved to " << all_points_dir << endl;
             pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
             pcl_wait_save->clear();
             scan_wait_num = 0;
