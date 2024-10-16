@@ -34,6 +34,7 @@ class Projector {
     std::vector<int> idx_to_v_;
     std::vector<int> idx_to_u_;
     M3D K_;
+    bool destagger_;
 };
 
 #endif  // COIN_LIO_PROJECTOR_H_
