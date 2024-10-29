@@ -53,4 +53,3 @@ image:
     intensity_scale: 0.25
     window: [41, 7]
     masks: [0, 84, 70, 44, 953, 84, 70, 44]
-    destagger: false             # true: destagger the pointcloud data https://static.ouster.dev/sdk-docs/reference/lidar-scan.html#staggering-and-destaggering

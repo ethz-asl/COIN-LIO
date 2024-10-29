@@ -90,8 +90,10 @@ void Projector::loadParameters(ros::NodeHandle nh) {
         return;
     }
     u_shift_ = static_cast<int>(u_shift);
-
-    nh.getParam("image/destagger", destagger_);
+    
+    // true: destagger the pointcloud data 
+    // https://static.ouster.dev/sdk-docs/reference/lidar-scan.html#staggering-and-destaggering
+    nh.param<bool>("image/destagger", destagger_, true);
 }
 
 size_t Projector::vectorIndexFromRowCol(const size_t row, const size_t col) const {

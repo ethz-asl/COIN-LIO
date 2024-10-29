@@ -1,6 +1,7 @@
 <launch>
     <arg name="rviz" default="true" />
     <arg name="bag_file" default="" />
+    <arg name="destagger" default="true" />
     <arg name="metadata_file"/>
     <arg name="column_shift"/>
     <arg name="point_topic"/>
@@ -13,6 +14,7 @@
     <param name="common/lid_topic" type="string" value="$(arg point_topic)"/>
     <param name="common/imu_topic" type="string" value="$(arg imu_topic)"/>
     <param name="image/u_shift" type="int" value="$(arg column_shift)"/>
+    <param name="image/destagger" type="bool" value="$(arg destagger)"/>
 
     <node pkg="coin_lio" type="coin_lio_mapping" name="laserMapping" output="screen" launch-prefix=""/>
 
