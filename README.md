@@ -61,7 +61,7 @@ This package was developed on Ubuntu 20.04 using ROS Noetic. Other versions shou
     ```
 4. Build COIN-LIO:
     ```bash
-    catkin build coin_lio
+    catkin build coin_lio --force-cmake
     ```
 
 ## Alternative Installation: Docker
@@ -104,8 +104,11 @@ If you are not using the built-in IMU in the Ouster LiDAR, you need to adapt the
 ### Run COIN-LIO with your own data
 Launch with settings for your data:
   ```bash
-  roslaunch coin_lio mapping.launch metadata_file:=<metadata_path.json> column_shift:=<parameter from calibration> point_topic:=<pointcloud_topic> imu_topic:=<imu_topic>
+  roslaunch coin_lio mapping.launch metadata_file:=<metadata_path.json> column_shift:=<parameter from calibration> point_topic:=<pointcloud_topic> imu_topic:=<imu_topic> destagger:=<true/false>
   ```
+  If your data already contains [destaggered point clouds from the ouster driver](https://github.com/ouster-lidar/ouster-ros/blob/55519ed2b8a7dd7d4ae13a968b0ec88e5cada7dd/launch/common.launch#L45), set `destagger:=false`, otherwise use `destagger:=true`.
+  
+
 Play your data:
   ```bash
   rosbag play <bag_path.bag>

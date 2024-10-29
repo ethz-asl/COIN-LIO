@@ -23,7 +23,7 @@ void Preprocess::ouster_handler(const sensor_msgs::PointCloud2::ConstPtr &msg, P
   pcl::uint64_t max_time = 0;
   for (size_t i = 0; i < pl_orig.points.size(); i++)
   {
-
+    if(isnan(pl_orig.points[i].x) || isnan(pl_orig.points[i].y) || isnan(pl_orig.points[i].z)) continue;
     double range = pl_orig.points[i].getVector3fMap().norm();
 
     if (range < blind) continue;

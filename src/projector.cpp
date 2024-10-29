@@ -90,6 +90,10 @@ void Projector::loadParameters(ros::NodeHandle nh) {
         return;
     }
     u_shift_ = static_cast<int>(u_shift);
+    
+    // true: destagger the pointcloud data 
+    // https://static.ouster.dev/sdk-docs/reference/lidar-scan.html#staggering-and-destaggering
+    nh.param<bool>("image/destagger", destagger_, true);
 }
 
 size_t Projector::vectorIndexFromRowCol(const size_t row, const size_t col) const {
@@ -150,7 +154,7 @@ void Projector::createImages(LidarFrame& frame) const {
 
 size_t Projector::indexFromPixel(const V2D& px) const {
     const int vv = (int(px(1)) + cols_ - offset_lut_[int(px(0))]) % cols_;
-    const size_t index = px(0)* cols_ + vv;
+    const size_t index = px(0)* cols_ + (destagger_ ? vv : int(px(1)));
     return index;
 };
 
