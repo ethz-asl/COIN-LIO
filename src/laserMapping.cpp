@@ -699,7 +699,7 @@ void h_share_model_photometric(state_ikfom &s, esekfom::dyn_share_datastruct<dou
     ekfom_data.h = VectorXd::Zero(n_features*n_patch);
     Eigen::MatrixXd h_x_terms = MatrixXd::Zero(n_features*n_patch, 12);
     Eigen::VectorXd h_terms = VectorXd::Zero(n_features*n_patch);
-    std::vector<bool> term_selected(n_features * n_patch, false); 
+    std::vector<int> term_selected(n_features * n_patch, false);
 
     #ifdef MP_EN
         omp_set_num_threads(MP_PROC_NUM);
