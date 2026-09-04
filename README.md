@@ -76,6 +76,17 @@ can download datasets and follow the rest of the tutorial below. On future runs,
 you can simply use `./run_docker.sh` (without `-b`) to not re-build the image.
 
 ## Running ENWIDE Dataset Sequences
+
+> [!NOTE]
+> If you observe inconsistent results (e.g., ATE) on 12th-generation or newer Intel processors with a hybrid P-core/E-core architecture, try pinning the process to either the performance cores (P-cores) or the efficiency cores (E-cores):
+
+```bash
+# Run the process on P-cores
+taskset -c "$(cat /sys/bus/event_source/devices/cpu_core/cpus)" roslaunch ...
+# Run the process on E-cores
+taskset -c "$(cat /sys/bus/event_source/devices/cpu_atom/cpus)" roslaunch ...
+```
+
 The ENWIDE dataset sequences can be downloaded [here](https://projects.asl.ethz.ch/datasets/enwide).
 Run a sequence:
   ```bash
